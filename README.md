@@ -65,19 +65,25 @@ formbuilder
 
 
 ```
+## Building project
+
+1. **Build the project using mvn** 
+   ```bash
+   mvn clean install
+   ```
 
 ## Running the Microservice
 
 1. **Build the Docker image:**
 
    ```bash
-   docker build -t panmandharshaddev/formbuilder:v1 .
+   mvn compile jib:dockerBuild
    ```
 
 2. **Run the Docker Compose:**
 
    ```bash
-   docker-compose up
+   docker-compose up -d
    ```
 
 3. **Access the API documentation:**
