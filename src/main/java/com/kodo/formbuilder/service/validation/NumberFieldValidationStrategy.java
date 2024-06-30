@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Validation strategy for number fields.
+ */
 public class NumberFieldValidationStrategy implements FieldValidationStrategy {
 
     @Value("${field.number.max-value}")
@@ -21,6 +24,12 @@ public class NumberFieldValidationStrategy implements FieldValidationStrategy {
     @Value("${field.number.decimal-places}")
     private int numberDecimalPlaces;
 
+    /**
+     * Validates a number field based on configured properties.
+     *
+     * @param field the field to be validated.
+     * @return List of validation error messages.
+     */
     @Override
     public List<String> validate(Field field) {
         if (field.getLabel() == null || field.getLabel().isBlank()) {

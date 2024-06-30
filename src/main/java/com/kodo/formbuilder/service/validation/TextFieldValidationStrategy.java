@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+/**
+ * Validation strategy for text fields.
+ */
 public class TextFieldValidationStrategy implements FieldValidationStrategy {
 
     @Value("${field.text.max-length}")
@@ -19,6 +22,12 @@ public class TextFieldValidationStrategy implements FieldValidationStrategy {
     @Value("${field.text.pattern}")
     private String textPattern;
 
+    /**
+     * Validates a text field based on configured properties.
+     *
+     * @param field the field to be validated.
+     * @return List of validation error messages.
+     */
     @Override
     public List<String> validate(Field field) {
         if (field.getLabel() == null || field.getLabel().isBlank()) {
@@ -40,5 +49,4 @@ public class TextFieldValidationStrategy implements FieldValidationStrategy {
         }
         return errors;
     }
-
 }

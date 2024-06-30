@@ -1,64 +1,168 @@
-# Enterprise Form Builder
+# Kodo Form Builder Microservice
+
+The Kodo Form Builder is a microservice designed to manage dynamic forms. This microservice is built using Spring Boot and connects to a PostgreSQL database. It provides RESTful endpoints to create, retrieve, and manage forms and their fields.
 
 ## Prerequisites
 
-- Java 11
-- PostgreSQL
-- Gradle
+- Docker
+- Docker Compose
 
-## Setup
+## Project Structure
 
-1. Clone the repository:
+```plaintext
+formbuilder
+├── docker-compose.yml
+├── Dockerfile
+├── HELP.md
+├── mvnw
+├── mvnw.cmd
+├── pom.xml
+├── README.md
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── com
+│   │   │       └── kodo
+│   │   │           └── formbuilder
+│   │   │               ├── KodoFormBuilderApplication.java
+│   │   │               ├── config
+│   │   │               │   └── ValidationConfig.java
+│   │   │               ├── controller
+│   │   │               │   └── FormController.java
+│   │   │               ├── model
+│   │   │               │   ├── Field.java
+│   │   │               │   ├── Form.java
+│   │   │               │   └── enums
+│   │   │               │       └── FieldType.java
+│   │   │               ├── repository
+│   │   │               │   └── FormRepository.java
+│   │   │               ├── service
+│   │   │               │   ├── FormService.java
+│   │   │               │   ├── ValidationService.java
+│   │   │               │   └── validation
+│   │   │               │       ├── FieldValidationStrategy.java
+│   │   │               │       ├── NumberFieldValidationStrategy.java
+│   │   │               │       └── TextFieldValidationStrategy.java
+│   │   │               ├── util
+│   │   │                   ├── Constants.java
+│   │   │                   └── ErrorMessages.java
+│   │   ├── resources
+│   │       ├── application.properties
+│   │       ├── application_prod.properties
+│   │       ├── logback.xml
+│   │       └── schema.sql
+│   └── test
+│       └── java
+│           └── com
+│               └── kodo
+│                   └── formbuilder
+│                       └── KodoFormBuilderApplicationTests.java
+│                       └── controller
+│                          └── FormControllerTest.java
+│                       └── service
+│                          └── FormServiceTest.java
+│                          └── ValidationServiceTest.java
 
-    ```bash
-    git clone <repository-url>
-    cd enterprise-form-builder
-    ```
 
-2. Update the PostgreSQL credentials in `src/main/resources/application.properties`.
+```
 
-3. Create the PostgreSQL database and run the schema script:
+## Running the Microservice
 
-    ```bash
-    psql -U your_db_username -d your_db_name -a -f src/main/resources/schema.sql
-    ```
+1. **Build the Docker image:**
 
-4. Build and run the application:
+   ```bash
+   docker build -t panmandharshaddev/formbuilder:v1 .
+   ```
 
-    ```bash
-    ./gradlew bootRun
-    ```
+2. **Run the Docker Compose:**
 
-5. Run tests:
+   ```bash
+   docker-compose up
+   ```
 
-    ```bash
-    ./gradlew test
-    ```
+3. **Access the API documentation:**
+
+   Open your browser and go to [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) to view the API documentation.
+
+## Configuration
+
+The `application.properties` file contains configurations for the PostgreSQL database:
+
+```properties
+spring.application.name=Kodo Form Builder
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/formbuilder
+spring.datasource.username=postgres
+spring.datasource.password=admin
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+# Text field configurations
+field.text.max-length=255
+field.text.min-length=1
+field.text.pattern=^[a-zA-Z0-9 ]*$
+
+# Number field configurations
+field.number.max-value=1000000
+field.number.min-value=0
+field.number.integer-only=true
+field.number.decimal-places=2
+```
+
+## Health Check
+
+The Docker Compose file includes a health check for the PostgreSQL container to ensure that the service only starts once the database is ready.
+
+## Running Tests
+
+To run the tests, use the following command:
+
+```bash
+./mvn test
+```
 
 ## Endpoints
 
-- `POST /api/forms` - Create a new form
-- `GET /api/forms/{id}` - Get a form by ID
-- `GET /api/forms` - Get all forms
-
-## Example Request
-
 ### Create Form
 
-```bash
-curl -X POST http://localhost:8080/api/forms -H 'Content-Type: application/json' -d '{
-  "title": "Leave Application Form",
+```http
+POST /api/forms
+```
+
+Request Body:
+```json
+{
+  "title": "Sample Form",
   "fields": [
     {
-      "label": "Reason for Leave",
+      "label": "Name",
       "isRequired": true,
-      "type": "TEXT"
+      "type": "TEXT",
+      "value": "Harshad"
     },
     {
-      "label": "Number of Days",
-      "isRequired": true,
+      "label": "Age",
+      "isRequired": false,
       "type": "NUMBER",
-      "configuration": "{\"min\": 1, \"max\": 30, \"decimalPlaces\": 0}"
+      "value": "29"
     }
   ]
-}'
+}
+```
+
+### Get Form by ID
+
+```http
+GET /api/forms/{id}
+```
+
+### Get All Forms
+
+```http
+GET /api/forms
+```
+
+## License
+
+This project is licensed under the MIT License.

@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * REST controller for managing forms.
+ */
 @RestController
 @RequestMapping("/api/forms")
 @Tag(name = "Form API", description = "Endpoints for managing forms")
@@ -27,6 +30,12 @@ public class FormController {
     @Autowired
     private ValidationService validationService;
 
+    /**
+     * Endpoint to create a new form.
+     *
+     * @param form the form to be created.
+     * @return ResponseEntity with the created form or validation errors.
+     */
     @Operation(summary = "Create a new form")
     @ApiResponse(responseCode = "200", description = "Form created successfully")
     @ApiResponse(responseCode = "400", description = "Validation errors", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))
@@ -40,6 +49,12 @@ public class FormController {
         return ResponseEntity.ok(savedForm);
     }
 
+    /**
+     * Endpoint to get a form by its ID.
+     *
+     * @param id the ID of the form.
+     * @return ResponseEntity with the form or 404 status if not found.
+     */
     @Operation(summary = "Get a form by ID")
     @ApiResponse(responseCode = "200", description = "Form found")
     @ApiResponse(responseCode = "404", description = "Form not found")
@@ -49,6 +64,11 @@ public class FormController {
         return form.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    /**
+     * Endpoint to get all forms.
+     *
+     * @return List of all forms.
+     */
     @Operation(summary = "Get all forms")
     @ApiResponse(responseCode = "200", description = "List of forms")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)

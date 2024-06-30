@@ -15,6 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Service class for validating forms and fields.
+ */
 @Service
 public class ValidationService {
 
@@ -28,6 +31,12 @@ public class ValidationService {
         validationStrategies.put(FieldType.NUMBER, numberFieldValidationStrategy);
     }
 
+    /**
+     * Validates a form.
+     *
+     * @param form the form to be validated.
+     * @return a list of validation error messages.
+     */
     public List<String> validateForm(Form form) {
         if (form.getTitle() == null || form.getTitle().isBlank()) {
             return List.of(ErrorMessages.FORM_TITLE_REQUIRED);
@@ -38,7 +47,7 @@ public class ValidationService {
         for (Field field : form.getFields()) {
             if (field.getIsRequired()
                     && (field.getType() == null || field.getType().toString().isBlank())
-                    && (field.getValue() == null || field.getValue().isEmpty())) {
+                    || (field.getValue() == null || field.getValue().isEmpty())) {
                 errors.add(String.format(ErrorMessages.FIELD_VALUE_REQUIRED, field.getLabel()));
             } else {
                 FieldValidationStrategy validationStrategy = validationStrategies.get(field.getType());
