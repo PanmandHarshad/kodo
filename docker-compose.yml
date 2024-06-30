@@ -1,0 +1,45 @@
+version: '1.0'  # Use the appropriate version of Docker Compose
+
+services:
+  formbuilderdb:
+    container_name: formbuilderdb
+    image: postgres:latest  # Use the latest PostgreSQL image
+    ports:
+      - "5432:5432"  # Map port 5432 on the host to port 5432 in the container (default PostgreSQL port)
+    environment:
+      POSTGRES_DB: formbuilderdb  # Set the name of the database
+      POSTGRES_USER: postgres  # Set the username for PostgreSQL
+      POSTGRES_PASSWORD: postgres  # Set the password for PostgreSQL
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]  # Command to check if PostgreSQL is ready
+      timeout: 10s
+      retries: 10
+      interval: 10s
+      start_period: 10s
+    networks:
+      - kodo
+
+  formbuilder:
+    image: "panmandharshaddev/formbuilder:v1"
+    container_name: formbuilder-ms
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_APPLICATION_NAME: "formbuilder"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://formbuilderdb:5432/formbuilderdb"  # JDBC URL for PostgreSQL
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_USERNAME: postgres  # Username for PostgreSQL
+      SPRING_DATASOURCE_PASSWORD: postgres  # Password for PostgreSQL
+    depends_on:
+      formbuilderdb:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - kodo
+
+networks:
+  kodo:
+    driver: "bridge"
